@@ -1,0 +1,54 @@
+# ===============================
+# Sun King PAYG Solar Backend
+# Base Application Properties
+# ===============================
+spring:
+  application:
+    name: payg-solar-backend
+
+  # JPA / Hibernate
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 50
+          fetch_size: 50
+        order_inserts: true
+        order_updates: true
+
+  # Flyway database migrations
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+
+  # Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# JWT
+app:
+  jwt:
+    expiration-ms: 86400000  # 24 hours
+
+# Logging
+logging:
+  level:
+    com.sunking.payg: INFO
+    org.hibernate.SQL: WARN
+
+# Integration
+integration:
+  mobile-money:
+    mock-enabled: true
+    success-rate: 0.8

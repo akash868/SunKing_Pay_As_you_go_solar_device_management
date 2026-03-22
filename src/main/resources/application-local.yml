@@ -1,0 +1,49 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:h2:mem:paygdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration/h2
+    url: jdbc:h2:mem:paygdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    user: sa
+    password:
+
+app:
+  jwt:
+    secret: bG9jYWwtZGV2LXNlY3JldC1rZXktZm9yLXN1bi1raW5nLXBheWctc29sYXItc3lzdGVtLTIwMjQ=
+    expiration-ms: 86400000
+
+server:
+  port: 8080
+
+logging:
+  level:
+    com.sunking.payg: DEBUG
+    org.hibernate.SQL: DEBUG
+
+integration:
+  mobile-money:
+    mock-enabled: true
+    success-rate: 0.8

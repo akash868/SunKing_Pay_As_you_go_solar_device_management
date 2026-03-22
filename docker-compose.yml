@@ -1,0 +1,55 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: payg-postgres
+    environment:
+      POSTGRES_DB: paygdb
+      POSTGRES_USER: payguser
+      POSTGRES_PASSWORD: paygpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U payguser -d paygdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Spring Boot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: payg-app
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/paygdb
+      DB_USERNAME: payguser
+      DB_PASSWORD: paygpassword
+      JWT_SECRET: cHJvZHVjdGlvbi1zZWNyZXQta2V5LWZvci1zdW4ta2luZy1wYXlnLXNvbGFyLXN5c3RlbS1jaGFuZ2UtbWUtaW4tcHJvZA==
+      JWT_EXPIRATION_MS: 86400000
+      MOBILE_MONEY_MOCK: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: payg-network
